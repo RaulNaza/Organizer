@@ -191,7 +191,7 @@ function refresh () {
                             if(data.length !== 0){
                                 //shows the table heading if the task has any todo instructions
                                 tableHeading.removeClass("d-none");
-                                counter = 0;
+                                
                                 for (let key of data){
                                     // console.log(`This is the data for task name ${key.taskName} and its ID: ${key.newInstruction}, ${key.id} this is iteration ${counter}`);
                                     // console.log(`This is the value of key ${key.id} on is iteration ${counter}`);
@@ -202,15 +202,14 @@ function refresh () {
                                             <td class="col"><button type="button" class="btn btn-outline-dark" id="edit-btn-${key.id}">Edit</button> <button type="button" class="btn btn-outline-danger" id="delete-btn-${key.id}">Delete Inst.</button></td>
                                         </tr>
                                     `);
-                                    counter +=1;
     
                                     //declaring Jquery variable for the delete button
                                     let deleteBtn = $(`#delete-btn-${key.id}`);
                                         //no need to pass in key.newInstruction or key.taskName**********
                                         deleteInstruction(deleteBtn,key.id,key.newInstruction,key.taskName);
 
-                                }
-                            }
+                                };
+                            };
                         });
 
             }
@@ -228,7 +227,7 @@ function refresh () {
 function postTask (taskName){
     $.post(organizer, {
         taskName: taskName,
-    })
+    });
 };
 
 //new Todo will post to todoList with its respective organizer ID
@@ -270,7 +269,7 @@ function editInstFromServer(id,newTaskName){
                 organizerId.push(key.OrganizerId);
                 arr.push(key.id);
                 // console.log(`This is the todoList Instructions ID: ${organizerId}`)
-            }
+            };
             
         };
         
@@ -337,48 +336,8 @@ function deleteInstFromServer (id){
 
 
 
-//*******************************************************************************************//
-//manipulating nested objects in JSON FILE
-// $.get(organizer, function (data){
 
-//     let keys = Array.from(data);
-//     let todoListOfKey1 = keys[0].todoList
-
-//     console.log(todoListOfKey1)
-//     if(Object.hasOwn(todoListOfKey1, "todo1")){
-//         console.log("success")
-//     }
-
-// })
-
-
-// $.ajax(`${organizer}/3/todoList`, {
-//     type: "put",
-//     data: {
-//         "todo1": "blah"
-//         },
-
-//     }
-// );
-
-
-
-//Used to append a new instruction to the todo list
-// function addNewInstruction(div,instruction,id){
-//     div.append(`
-//     <table>
-//         <tr class="row">
-//             <td class="col">1.</td>
-//             <td class="col">${instruction}</td>
-//         </tr>
-//     </table>
-//     `);
-
-// };
-
-
-
-
+////Help with the server
 // //new instruction should be posted to API JSON Server file
 function findTaskId (taskname){
     $.get(`${organizer}?taskName=TASK3`).then(function (data) {
@@ -410,57 +369,3 @@ function assignToTask(){
 };
 
 // assignToTask();
-
-///////////////////////////Idea from before/////////////////////////////////////////////
-
-// //Todo Button/List
-
-// //// Within this function we can acces the instructions div element
-// let todoBtn = $('#btn-add-todo')
-    
-// todoBtn.on('click', (event) =>{
-//     event.preventDefault();
-//     console.log(event);
-
-//     let instructions = $('#todo');
-//     let newInstruction = $('#input-instructions').val();
-//     addNewInstruction(instructions,newInstruction,id);
-
-//     $('#input-instructions').val('');
-// });
-
-
-//Working todo button list usign counter
-
-// function addToDo (todoBtn,todoTable,taskName,newInstructionInput,emptyInput,tableHeading){
-//     let counter = 1;
-    
-//     todoBtn.on('click', (event) =>{
-//         event.preventDefault();
-        
-//         let newInst = newInstructionInput.val()
-//         let taskId = todoTable[0].id;
-//         console.log(taskId)
-
-//         if(newInst !== ""){
-//             emptyInput.addClass("d-none");
-//             //show table heading once a todo is added. *** Will need to be changed to if a todo already exists
-//             tableHeading.removeClass("d-none");
-
-//             todoTable.append(`
-//                     <tr class="row">
-//                         <td class="col">${counter}.</td>
-//                         <td class="col">${newInst}</td>
-//                     </tr>
-//             `);
-//             postToDo(taskId,taskName,newInst);
-//             counter += 1;
-//             //should be changed to newInstructionInput.val();********
-//             newInstructionInput.val();
-//         }else{
-
-//             emptyInput.removeClass("d-none");
-//         }
-
-//     });
-// };
