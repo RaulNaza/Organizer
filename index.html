@@ -6,9 +6,30 @@
     <title>CRUD Project</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
 </head>
-<body>
+<body onload="refresh()">
 
+    <div class="container-fluid text-center mb-5">
+        <h2>Organizer</h2>
+    </div>
 
+    <div class="container" id="app-header">
+        <div class="text-center mt-5">
+            <h4>Tasks</h4>
+        </div>
+        <div class="container">
+            <form id="task-form">
+                <div>
+                    <label class="form-label fs-4">New Task</label>
+                    <input class="form-control" style="width: 30%;" placeholder="Create New Task">
+                </div>
+                <button type="submit" class="btn btn-primary mt-3" id="submitBtn">Add Task</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container mt-5" id="app-body">
+        
+    </div>
 
 
 

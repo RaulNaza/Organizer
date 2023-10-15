@@ -1,12 +1,32 @@
 {
-    "Organizer":[{
-        "taskName": "task1",
-        "todoList": {
-            "todo1": "walk",
-            "todo2": "run",
-            "todo3": "sprint"
-        },
-        "id": "1"
+  "organizer": [
+    {
+      "taskName": "TASK2",
+      "id": 1
+    },
+    {
+      "taskName": "TASK3",
+      "id": 2
     }
-    ]
+  ],
+  "todolist": [
+    {
+      "taskName": "TASK2",
+      "newInstruction": "test1",
+      "OrganizerId": "1",
+      "id": 1
+    },
+    {
+      "taskName": "TASK3",
+      "newInstruction": "test1",
+      "OrganizerId": "2",
+      "id": 2
+    },
+    {
+      "taskName": "TASK3",
+      "newInstruction": "test2",
+      "OrganizerId": "2",
+      "id": 3
+    }
+  ]
 }
