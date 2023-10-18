@@ -6,23 +6,23 @@
     <title>CRUD Project</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
 </head>
-<body onload="refresh()">
+<body onload="refresh()" style="background-image: linear-gradient(to bottom, rgb(255, 255, 255), rgba(52, 90, 141, 0.323));">
 
-    <div class="container-fluid text-center mb-5">
-        <h2>Organizer</h2>
+    <div class="container-fluid text-center mb-5 fs-1 fw-bolder border" style="background-image:linear-gradient(to top, rgba(255, 255, 255, 0.52), rgba(31, 29, 31, 0.504)), url('images/Banner.jpg');">
+        <p class="mb-5">Organizer</p>
     </div>
 
-    <div class="container" id="app-header">
-        <div class="text-center mt-5">
-            <h4>Tasks</h4>
+    <div class="container border border-secondary border-2 rounded shadow p-3 mb-5 bg-body-tertiary " id="app-header">
+        <div class="text-start mb-3 fs-3 fw-bolder">
+            <p>Create a New Task</p>
         </div>
-        <div class="container">
-            <form id="task-form">
+        <div class="container mb-3" style="justify-items: start;">
+            <form class="m-2" id="task-form">
                 <div>
-                    <label class="form-label fs-4">New Task</label>
-                    <input class="form-control" style="width: 30%;" placeholder="Create New Task">
+                    <label class="form-label fs-5">New Task Name</label>
+                    <input class="form-control" style="width: 30%;" placeholder="Provide Task Name">
+                    <button type="submit" class="btn btn-primary mt-3" id="submitBtn">Add Task</button>
                 </div>
-                <button type="submit" class="btn btn-primary mt-3" id="submitBtn">Add Task</button>
             </form>
         </div>
     </div>
@@ -32,8 +32,14 @@
     </div>
 
 
-
-
+    <footer>
+        <div class="container border-top border-dark-subtle ">
+            <div class="row mt-2">
+                <img src="images/Professional Photo.jpeg" class="col-2 rounded-circle">
+                <div class="col-10 rounded-pill fs-4 fw-medium fst-italic text-start mt-5">Created by: <br> Raul Nazario Gonzales</div>
+            </div>
+        </div>
+    </footer>
 
     <!-- Scripts -->
     <script src="node_modules/jquery/dist/jquery.js"></script>

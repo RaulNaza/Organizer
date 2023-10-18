@@ -8,9 +8,10 @@ let p = $('#app-body')
 let submitBtn = $('#submitBtn')
 let input = $('.form-control')
 
+let emptyStr = new RegExp("^\\s*$")
 
 ////TASK////
-//Button for New Task
+//Button to Add New Task
 submitBtn.on('click', (event) =>{
     event.preventDefault();
 
@@ -18,7 +19,7 @@ submitBtn.on('click', (event) =>{
     let taskName = input.val().toUpperCase();
     
     //Test for empty space **if 2 spaces are use it will not work
-    if(taskName !== ""){
+    if(emptyStr.test(taskName) === false){
         
         //Creating the Body of the app
         ////This will add a new task object to the server
@@ -30,42 +31,48 @@ submitBtn.on('click', (event) =>{
 
 });
 
-//Edit task
-function editTask (btn,id,div,submitBtnEdit,title){
+//Button to Edit Existing Task
+function editTask (btn,id,div,submitBtnEdit,title,emptyInput){
     btn.on('click', (event)=>{
         event.preventDefault();
-        console.log(`You are trying to edit task with id ${id}`);
         
         div.attr('contenteditable','true');
         submitBtnEdit.removeClass("d-none");
         
         submitBtnEdit.on('click', ()=>{
-            let titleText = title.text().toUpperCase();
+           if(emptyStr.test(title.text()) === false){
 
-            console.log(`Changes submited!`);
-            //Need to run a function that will use send a PUT ajax request editing the taskName using its id
-            editTaskInServer(id,titleText);
+                    emptyInput.addClass('d-none');
 
-            // editInstFromServer(id,titleText);
+                    let titleText = title.text().toUpperCase();
 
-            div.attr('contenteditable','false');
-            submitBtnEdit.addClass('d-none');
+                    editTaskInServer(id,titleText);
 
-            return refresh();
-        })
-        
-        
+                    div.attr('contenteditable','false');
+                    submitBtnEdit.addClass('d-none');
+
+                    return refresh();
+               
+            }
+            if(emptyStr.test(title.text()) === true){
+                emptyInput.removeClass('d-none');
+                emptyInput.text("Please change task name and try again.")
+                
+
+            }
+
+
+        });
     });
 };
 
 
-//delete task
+//Button to Delete Existing Task
 
 function deleteTask(deleteBtnForTask,id){
     deleteBtnForTask.on('click', (event) =>{
         event.preventDefault();
 
-        // console.log(`This is the buttons ID ${id}`)
         deleteTaskFromServer(id);
 
         
@@ -74,9 +81,9 @@ function deleteTask(deleteBtnForTask,id){
     });
 };
 
+////TODO INSTRUCTIONS////
 
 //Button to add new instructions to To Do List
-
 //// Within this function we can access the button itself, todoDiv, newInstructionsInput (this is the input element),
 //// and emptyInput (used to add an alert if the input being trying to add is empty).
 
@@ -85,11 +92,15 @@ function addToDo (todoBtn,todoTable,taskName,newInstructionInput,emptyInput){
     todoBtn.on('click', (event) =>{
         event.preventDefault();
 
-        let newInst = newInstructionInput.val()
-        let taskId = todoTable[0].id;
-        // console.log(taskId)
+        let str = newInstructionInput.val()
+    
+        
+        if(emptyStr.test(str) === false){
+            
+            let firstCharUpper = `${str[0].toUpperCase()}${str.slice(1)}`;
+            let newInst = firstCharUpper.slice(0,115);
+            let taskId = todoTable[0].id;
 
-        if(newInst !== ""){
             //do not display emptyInput alert label if newInst does not return an empty string
             emptyInput.addClass("d-none");
 
@@ -104,29 +115,39 @@ function addToDo (todoBtn,todoTable,taskName,newInstructionInput,emptyInput){
         }else{
             //if the newInstruction input is empty then the emptyInput alert label will be displayed in red
             emptyInput.removeClass("d-none");
+            emptyInput.text("You cannot add an empty To Do. Please try again. :)");
         }
 
     });
 };
 
-//Edit todo
-function editTodo(btn,submitBtn,todoId,nameField){
-    btn.on("click", function (){
-        nameField.attr('contenteditable','true');
+//Button to Edit a current ToDo Inst
+function editTodo(btn, submitBtn, todoId, nameField,emptyInput) {
+    btn.on("click", function () {
+        nameField.attr('contenteditable', 'true');
 
         submitBtn.removeClass('d-none');
 
-        submitBtn.on('click', ()=>{
-            console.log(`Success todo should be edited now! This is the value of text: ${nameField.text()}`)
+        submitBtn.on('click', () => {
+            if (emptyStr.test(nameField.text()) === false) {
 
-            editTodoInst(todoId,nameField.text());
+                let str = nameField.text();
+                let firstCharUpper = str[0].toUpperCase() + str.slice(1);
+                let newName = firstCharUpper.slice(0, 115);
 
-            nameField.attr('contenteditable', 'false')
-            submitBtn.addClass('d-none');
-            
-            refresh();
-        })
-    })
+                editTodoInst(todoId, newName);
+
+                nameField.attr('contenteditable', 'false')
+                submitBtn.addClass('d-none');
+
+                refresh();
+            }else{
+                emptyInput.removeClass("d-none");
+                emptyInput.text("The new name for the To Do being edited cannot be blank. Please try again! :)")
+            }
+
+        });
+    });
 };
 
 
@@ -136,18 +157,31 @@ function deleteInstruction(btn,id,instName,instTaskName){
     btn.on('click', (event)=>{
         event.preventDefault();
 
-        // console.log(`This would delete the ${instName} assisgned to task name ${instTaskName} with ID: ${id}`);
         deleteInstFromServer(id);
         refresh();
     });
 };
 
+//Formating functions: This will check to see if the checkbox input has been checked
+////If it has been checked then we move forward to strikethrough its corresponding ToDo Instruction
+function strikeTodo(checkbox,todoName) {
+
+    checkbox.on('change', function(){
+            if(checkbox.is(':checked')){
+                todoName.addClass('text-decoration-line-through')
+                
+            }else{
+                todoName.removeClass('text-decoration-line-through')
+            }
+        
+    })
+}
 
 
 
-//This function will be used to refresh the app body in order to show all tasksand their todos
+
+//This function will be used to refresh the app body in order to show all tasks and their todos
 function refresh (event) {
-
 
     ////this will refresh the app-body element showing all tasks.
     p.empty();
@@ -156,36 +190,43 @@ function refresh (event) {
         if (data.length !== 0){
             for(let task of data){
                 p.prepend(`
-                <div class="container-fluid border border-secondary mb-3" style="width: 70%;">
-                    <div class="container" id="${task.taskName}">
-                        <p id="task-title">${task.taskName.toUpperCase()}</p>
-                    </div>
+                <div class="container-fluid border border-secondary border-2 rounded shadow-lg p-3 mb-5 bg-body-tertiary" style="width: 70%;">
+                    <div class="container">
+                        <div class="container fs-4 fw-bold text-center" id="${task.taskName}">
+                            <p class="text-decoration-underline" id="task-title-${task.id}">${task.taskName.toUpperCase()}</p>
+                        </div>
                         <button class="btn btn-secondary d-none mb-2" id="submit-task-edit">Done Edit</button>
+                    </div>        
                     <div>
-                            <div>
-                                <form>
-                                    <input class="form-control mb-1" id="input-instructions" style="width: 30%;" placeholder="New Instruction"></input>
-                                    <button class="btn btn-primary" type="button" id="add-todo-${task.taskName}">Add To-Do</button>
+                        <div>
+                            <form class="row">
+                                <div class="col-6">
+                                    <input class="form-control mb-1" id="input-instructions" style="width: 60%;" placeholder="New Instruction"></input>
+                                    <button class="btn btn-primary" type="butto n" id="add-todo-${task.taskName}">Add To-Do</button>
                                     <button class="btn btn-outline-dark" type="button" id="edit-delete-${task.id}">Edit Task</button>
                                     <button class="btn btn-outline-danger" type="button" id="task-delete-${task.id}">Delete Task</button><br>
-                                    <label class="text-danger d-none" role="alert" id="empty-input">Please input a To Do.</label><br>
-                                </form>
-                            </div>
-                            <div class="mt-1">
-                                To Do:
-                            <div>
-                                <table class="table table-striped table-hover" >
-                                    <thead class="d-none" id="table-heading">
-                                        <tr class="row">
-                                            <th class="col"></th>
-                                            <th class="col">ToDO Inst.</th>
-                                            <th class="col"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="${task.id}">
-                                    </tbody>
-                                </table>
-                            </div>
+                                </div>
+                                <div class="col-6">
+                                    <label class="alert alert-danger mt-4 d-none" role="alert" id="empty-input"></label><br>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="container">
+                            <div class="fs-3 fst-italic">To Do:</div>
+                        <div>
+                            <table class="table table-striped table-hover" >
+                                <thead class="d-none" id="table-heading">
+                                    <tr class="row">
+                                        <th class="col-1"></th>
+                                        <th class="col-5"></th>
+                                        <th class="col-2">Done?</th>
+                                        <th class="col-4"></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="${task.id}">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
                 `);
@@ -195,53 +236,55 @@ function refresh (event) {
                 let emptyInput = $('#empty-input');
                 let tableHeading = $('#table-heading');
                 let taskNameDiv = $(`#${task.taskName}`)
+                let todoBtn = $(`#add-todo-${task.taskName}`);
+                let editBtnForTask = $(`#edit-delete-${task.id}`);
+                let taskTitle = $(`#task-title-${task.id}`);
+                let submitTaskEdit = $("#submit-task-edit");
+                let deleteBtnForTask = $(`#task-delete-${task.id}`);
 
-                    //declaring buttons
-                    let todoBtn = $(`#add-todo-${task.taskName}`);
-                    let editBtnForTask = $(`#edit-delete-${task.id}`);
-                    let taskTitle = $('#task-title');
-                    let submitTaskEdit = $("#submit-task-edit");
-                    let deleteBtnForTask = $(`#task-delete-${task.id}`);
+                //pass the above variables as arguments to the addToDo functions
+                addToDo(todoBtn, todoTable, task.taskName, newInstructionInput, emptyInput);
 
-                    //pass the above variables as arguments to the addToDo functions
-                    addToDo(todoBtn,todoTable,task.taskName,newInstructionInput,emptyInput);
-                    // console.log(task.id)
+                //task edit button function
+                editTask(editBtnForTask, task.id, taskNameDiv, submitTaskEdit, taskTitle, emptyInput);
+                //task delete button function
+                deleteTask(deleteBtnForTask, task.id);
 
-                    //task edit button function
-                    editTask(editBtnForTask,task.id,taskNameDiv,submitTaskEdit,taskTitle);
-                    //task delete button function
-                    deleteTask(deleteBtnForTask,task.id);
-
-                        ///This will refresh the table within each task
-                        $.get(`${todoList}?OrganizerId=${task.id}`, function(data){
+                    ///This will refresh the table within each task
+                    $.get(`${todoList}?OrganizerId=${task.id}`, function(data){
+                        
+                        if(data.length !== 0){
+                            //shows the table heading if the task has any todo instructions
+                            tableHeading.removeClass("d-none");
                             
-                            if(data.length !== 0){
-                                //shows the table heading if the task has any todo instructions
-                                tableHeading.removeClass("d-none");
-                                
-                                for (let key of data){
-                                    // console.log(`This is the data for task name ${key.taskName} and its ID: ${key.newInstruction}, ${key.id} this is iteration ${counter}`);
-                                    // console.log(`This is the value of key ${key.id} on is iteration ${counter}`);
-                                    todoTable.append(`
-                                        <tr class="row">
-                                            <td class="col">${key.taskName}</td>
-                                            <td class="col" id="todo-name-${key.id}">${key.newInstruction}</td>
-                                            <td class="col"><button class="col btn btn-outline-dark d-none" id="edit-submit-${key.id}">Submit</button> <button type="button" class="col btn btn-outline-dark" id="edit-btn-${key.id}">Edit</button> <button type="button" class="col btn btn-outline-danger" id="delete-btn-${key.id}">Delete Inst.</button></td>
-                                        </tr>
-                                    `);
-    
-                                    //declaring Jquery variable for the delete button
-                                    let deleteBtn = $(`#delete-btn-${key.id}`);
-                                    //edit button
-                                    let editTodoBtn = $(`#edit-btn-${key.id}`);
-                                    let todoName = $(`#todo-name-${key.id}`);
-                                    let editSub = $(`#edit-submit-${key.id}`);
-                                        //no need to pass in key.newInstruction or key.taskName**********
-                                        editTodo(editTodoBtn,editSub,key.id,todoName);
-                                        deleteInstruction(deleteBtn,key.id,key.newInstruction,key.taskName);
-                                };
+                            let counter = 1;
+                            for (let key of data){
+
+                                todoTable.append(`
+                                    <tr class="row">
+                                        <td class="col-1">${counter}.</td>
+                                        <td class="col-5 overflow-auto" id="todo-name-${key.id}" for="${key.id}">${key.newInstruction}</td>
+                                        <td class="col-2"><input class="form-check-input" id="check-${key.id}" type="checkbox"></input></td>
+                                        <td class="col-4"><button class="col btn btn-outline-dark d-none" id="edit-submit-${key.id}">Submit</button> <button type="button" class="col btn btn-outline-dark" id="edit-btn-${key.id}">Edit</button> <button type="button" class="col btn btn-outline-danger" id="delete-btn-${key.id}">Delete Inst.</button></td>
+                                    </tr>
+                                `);
+                                counter +=1;
+
+                                //declaring Jquery variable for the delete button
+                                let deleteBtn = $(`#delete-btn-${key.id}`);
+                                //edit button
+                                let editTodoBtn = $(`#edit-btn-${key.id}`);
+                                let todoName = $(`#todo-name-${key.id}`);
+                                let editSub = $(`#edit-submit-${key.id}`);
+                                    
+                                    editTodo(editTodoBtn,editSub,key.id,todoName,emptyInput);
+                                    deleteInstruction(deleteBtn,key.id,key.newInstruction,key.taskName);
+                                    //runs the StrikeTodo functions checking the status of the checkbox
+                                    let checkBox = $(`#check-${key.id}`);
+                                    strikeTodo(checkBox,todoName)
                             };
-                        });
+                        };
+                    });
 
             }
 
@@ -253,6 +296,7 @@ function refresh (event) {
 };
 
 
+//Functions to add server data using AJAX methods
 
 //new task should be posted to API JSON Server file
 function postTask (taskName){
@@ -269,15 +313,13 @@ function postToDo (taskId,taskName,instruction){
     });
 };
 
-
+//Functions to delete server data usign AJAX methods
 function deleteTaskFromServer(id){
     
     $.ajax({
         url: `${organizer}/${id}`,
         type: 'DELETE',
         success: () => {
-            // console.log(`The task with id ${id} should now have been deleted from server`)
-            console.log(`Task Deleted from server and returning this id ${id}`)
             getTodoId(id,'delete');
         }
     });
@@ -293,12 +335,10 @@ function getTodoId (id,requestType,newTaskName){
         success: function (data) {
             if(requestType === 'edit'){
                 for(let key of data){
-                    console.log('This key: ' + key.id)
                  editTodoTaskName(key.id,newTaskName)
                 }
             }else if(requestType === 'delete'){
                 for(let key of data){
-                    console.log('This key: ' + key.id)
                     deleteInstFromServer(key.id)
                 }
 
@@ -314,15 +354,14 @@ function deleteInstFromServer (id){
         type: 'DELETE',
         async: true,
         success: ()=>{
-            console.log(`The instruction with id ${id} should now be deleted from the server`)
         }
     });
 };
 
 
-//Editing
+//Functions to edit server data using AJAX methods
 
-function editTaskInServer (id,titleText){
+function editTaskInServer(id, titleText) {
     $.ajax({
         url: `${organizer}/${id}`,
         type: 'PATCH',
@@ -330,11 +369,10 @@ function editTaskInServer (id,titleText){
         data: {
             taskName: `${titleText}`
         },
-        success: () =>{
-            console.log(`Data should now be edited for task with id: ${id}`)
-            getTodoId(id,"edit",titleText)
+        success: () => {
+            getTodoId(id, "edit", titleText)
         }
-    })
+    });
 
 };
 
@@ -345,12 +383,9 @@ function editTodoTaskName(id,newTaskName){
         async:false,
         data: {
             taskName: `${newTaskName}`
-        },
-        success: () => {
-            console.log('The instruction should now be edited as well')
         }
-    })
-}
+    });
+};
 
 function editTodoInst(id,newInstName){
     $.ajax({
@@ -359,9 +394,6 @@ function editTodoInst(id,newInstName){
         async:false,
         data: {
             newInstruction: `${newInstName}`
-        },
-        success: () => {
-            console.log('The instruction should now be edited as well')
         }
-    })
-}
+    });
+};
