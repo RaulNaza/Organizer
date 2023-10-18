@@ -1,4 +1,3 @@
-// const { event } = require("jquery");
 
 //Server
 const organizer = "http://localhost:3000/Organizer";
@@ -32,31 +31,33 @@ submitBtn.on('click', (event) =>{
 });
 
 //Edit task
-function editTask (btn,id,div,submitBtn,title){
+function editTask (btn,id,div,submitBtnEdit,title){
     btn.on('click', (event)=>{
         event.preventDefault();
         console.log(`You are trying to edit task with id ${id}`);
         
         div.attr('contenteditable','true');
-        submitBtn.removeClass("d-none");
+        submitBtnEdit.removeClass("d-none");
         
-        submitBtn.on('click', ()=>{
+        submitBtnEdit.on('click', ()=>{
             let titleText = title.text().toUpperCase();
 
             console.log(`Changes submited!`);
             //Need to run a function that will use send a PUT ajax request editing the taskName using its id
             editTaskInServer(id,titleText);
 
-            editInstFromServer(id,titleText);
+            // editInstFromServer(id,titleText);
 
             div.attr('contenteditable','false');
-            submitBtn.addClass('d-none');
-            refresh();
+            submitBtnEdit.addClass('d-none');
+
+            return refresh();
         })
-
-
+        
+        
     });
 };
+
 
 //delete task
 
@@ -67,7 +68,9 @@ function deleteTask(deleteBtnForTask,id){
         // console.log(`This is the buttons ID ${id}`)
         deleteTaskFromServer(id);
 
+        
         refresh();
+
     });
 };
 
@@ -81,7 +84,7 @@ function addToDo (todoBtn,todoTable,taskName,newInstructionInput,emptyInput){
     
     todoBtn.on('click', (event) =>{
         event.preventDefault();
-        
+
         let newInst = newInstructionInput.val()
         let taskId = todoTable[0].id;
         // console.log(taskId)
@@ -106,6 +109,28 @@ function addToDo (todoBtn,todoTable,taskName,newInstructionInput,emptyInput){
     });
 };
 
+//Edit todo
+function editTodo(btn,submitBtn,todoId,nameField){
+    btn.on("click", function (){
+        nameField.attr('contenteditable','true');
+
+        submitBtn.removeClass('d-none');
+
+        submitBtn.on('click', ()=>{
+            console.log(`Success todo should be edited now! This is the value of text: ${nameField.text()}`)
+
+            editTodoInst(todoId,nameField.text());
+
+            nameField.attr('contenteditable', 'false')
+            submitBtn.addClass('d-none');
+            
+            refresh();
+        })
+    })
+};
+
+
+
 //Delete Instruction button
 function deleteInstruction(btn,id,instName,instTaskName){
     btn.on('click', (event)=>{
@@ -121,7 +146,8 @@ function deleteInstruction(btn,id,instName,instTaskName){
 
 
 //This function will be used to refresh the app body in order to show all tasksand their todos
-function refresh () {
+function refresh (event) {
+
 
     ////this will refresh the app-body element showing all tasks.
     p.empty();
@@ -130,36 +156,37 @@ function refresh () {
         if (data.length !== 0){
             for(let task of data){
                 p.prepend(`
-                <div class="container" id="${task.taskName}">
-                    <p id="task-title">${task.taskName.toUpperCase()}</p>
-                </div>
-                    <button class="btn btn-secondary d-none mb-2" id="submit-task-edit">Done Edit</button>
-                <div>
-                        <div>
-                            <form>
-                                <input class="form-control mb-1" id="input-instructions" style="width: 30%;" placeholder="New Instruction"></input>
-                                <button class="btn btn-primary" type="button" id="add-todo-${task.taskName}">Add To-Do</button>
-                                <button class="btn btn-outline-dark" type="button" id="edit-delete-${task.id}">Edit Task</button>
-                                <button class="btn btn-outline-danger" type="button" id="task-delete-${task.id}">Delete Task</button><br>
-                                <label class="text-danger d-none" role="alert" id="empty-input">Please input a To Do.</label><br>
-                            </form>
-                        </div>
-                        <div class="mt-1">
-                            To Do:
-                        </div>
-                        <div>
-                            <table class="table table-striped table-hover" >
-                                <thead class="d-none" id="table-heading">
-                                    <tr class="row">
-                                        <th class="col"></th>
-                                        <th class="col">ToDO Inst.</th>
-                                        <th class="col"></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="${task.id}">
-                                </tbody>
-                            </table>
-                        </div>
+                <div class="container-fluid border border-secondary mb-3" style="width: 70%;">
+                    <div class="container" id="${task.taskName}">
+                        <p id="task-title">${task.taskName.toUpperCase()}</p>
+                    </div>
+                        <button class="btn btn-secondary d-none mb-2" id="submit-task-edit">Done Edit</button>
+                    <div>
+                            <div>
+                                <form>
+                                    <input class="form-control mb-1" id="input-instructions" style="width: 30%;" placeholder="New Instruction"></input>
+                                    <button class="btn btn-primary" type="button" id="add-todo-${task.taskName}">Add To-Do</button>
+                                    <button class="btn btn-outline-dark" type="button" id="edit-delete-${task.id}">Edit Task</button>
+                                    <button class="btn btn-outline-danger" type="button" id="task-delete-${task.id}">Delete Task</button><br>
+                                    <label class="text-danger d-none" role="alert" id="empty-input">Please input a To Do.</label><br>
+                                </form>
+                            </div>
+                            <div class="mt-1">
+                                To Do:
+                            <div>
+                                <table class="table table-striped table-hover" >
+                                    <thead class="d-none" id="table-heading">
+                                        <tr class="row">
+                                            <th class="col"></th>
+                                            <th class="col">ToDO Inst.</th>
+                                            <th class="col"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="${task.id}">
+                                    </tbody>
+                                </table>
+                            </div>
+                    </div>
                 </div>
                 `);
                 //declaring JQueries
@@ -198,16 +225,20 @@ function refresh () {
                                     todoTable.append(`
                                         <tr class="row">
                                             <td class="col">${key.taskName}</td>
-                                            <td class="col">${key.newInstruction}</td>
-                                            <td class="col"><button type="button" class="btn btn-outline-dark" id="edit-btn-${key.id}">Edit</button> <button type="button" class="btn btn-outline-danger" id="delete-btn-${key.id}">Delete Inst.</button></td>
+                                            <td class="col" id="todo-name-${key.id}">${key.newInstruction}</td>
+                                            <td class="col"><button class="col btn btn-outline-dark d-none" id="edit-submit-${key.id}">Submit</button> <button type="button" class="col btn btn-outline-dark" id="edit-btn-${key.id}">Edit</button> <button type="button" class="col btn btn-outline-danger" id="delete-btn-${key.id}">Delete Inst.</button></td>
                                         </tr>
                                     `);
     
                                     //declaring Jquery variable for the delete button
                                     let deleteBtn = $(`#delete-btn-${key.id}`);
+                                    //edit button
+                                    let editTodoBtn = $(`#edit-btn-${key.id}`);
+                                    let todoName = $(`#todo-name-${key.id}`);
+                                    let editSub = $(`#edit-submit-${key.id}`);
                                         //no need to pass in key.newInstruction or key.taskName**********
+                                        editTodo(editTodoBtn,editSub,key.id,todoName);
                                         deleteInstruction(deleteBtn,key.id,key.newInstruction,key.taskName);
-
                                 };
                             };
                         });
@@ -238,68 +269,6 @@ function postToDo (taskId,taskName,instruction){
     });
 };
 
-//THIS FUNCTION IS NOT WORKING PROPERLY******************************************************
-function editTaskInServer (id,newTaskName){
-    console.log(`This is the Task ID: ${id}. With taskName: ${newTaskName}`);
-
-    $.ajax({
-        url: `${organizer}/${id}`,
-        type: 'PUT',
-        data: {
-            "taskName": newTaskName
-        },
-        success: () =>{
-            console.log(`You changed the name for task with ID: ${id}`)
-        }
-    });
-};
-
-function editInstFromServer(id,newTaskName){
-    
-    let arr = [];
-    let newInstruction = [];
-    let organizerId = [];
-
-    //will also need to edit taskName in the todolist resource
-    $.get(`${todoList}?OrganizerId=${id}`).then(function (data){
-
-        if (data.length !== 0){
-            for(let key of data){
-                newInstruction.push(key.newInstruction);
-                organizerId.push(key.OrganizerId);
-                arr.push(key.id);
-                // console.log(`This is the todoList Instructions ID: ${organizerId}`)
-            };
-            
-        };
-        
-        //If I ran the below AJAX method within the data loop it caused a server error "EADDRINUSE"
-        //I believe the method was running either infenitely or trying to edit("PUT") the changes simultaneously causing server to crash
-        //I pushed each property of key(above) to empty arrays as a way to avoid this issue.Then, looped the new arrays to update the server data
-        if(arr.length !== 0){
-            for (let i = 0; i < arr.length; i++){
-
-                console.log('this is arr: ' + arr[i]);
-                console.log('this is newInstruction: ' + newInstruction[i]);
-                console.log('this is organizerId: ' + organizerId[i])
-
-                $.ajax({
-                    url: `${todoList}/${arr[i]}`,
-                    type: 'PUT',
-                    data: {
-                        "taskName":newTaskName,
-                        "newInstruction": newInstruction[i],
-                        "OrganizerId": organizerId[i],
-                    }
-                });
-
-            };
-        };
-        
-    });
-
-};
-
 
 function deleteTaskFromServer(id){
     
@@ -308,26 +277,42 @@ function deleteTaskFromServer(id){
         type: 'DELETE',
         success: () => {
             // console.log(`The task with id ${id} should now have been deleted from server`)
+            console.log(`Task Deleted from server and returning this id ${id}`)
+            getTodoId(id,'delete');
         }
     });
-
-    //deleting a task should also delete its corresponding todo instructions
-        $.get(`${todoList}?OrganizerId=${id}`).then(function (data) {
-            //loop through all the occurences and delete from server
-            for(let key of data){
-                
-                deleteInstFromServer(key.id);
-            };
-        });
-
 };
 
+//find the id of each todo with an OrganizerId that matches the task id
+function getTodoId (id,requestType,newTaskName){
+
+    $.ajax({
+        url: `${todoList}?OrganizerId=${id}`,
+        type:'GET',
+        async: false,
+        success: function (data) {
+            if(requestType === 'edit'){
+                for(let key of data){
+                    console.log('This key: ' + key.id)
+                 editTodoTaskName(key.id,newTaskName)
+                }
+            }else if(requestType === 'delete'){
+                for(let key of data){
+                    console.log('This key: ' + key.id)
+                    deleteInstFromServer(key.id)
+                }
+
+            }
+        }
+    });
+};
 
 //Deleting instruction from server
 function deleteInstFromServer (id){
     $.ajax({
         url: `${todoList}/${id}`,
         type: 'DELETE',
+        async: true,
         success: ()=>{
             console.log(`The instruction with id ${id} should now be deleted from the server`)
         }
@@ -335,37 +320,48 @@ function deleteInstFromServer (id){
 };
 
 
+//Editing
 
+function editTaskInServer (id,titleText){
+    $.ajax({
+        url: `${organizer}/${id}`,
+        type: 'PATCH',
+        async: false,
+        data: {
+            taskName: `${titleText}`
+        },
+        success: () =>{
+            console.log(`Data should now be edited for task with id: ${id}`)
+            getTodoId(id,"edit",titleText)
+        }
+    })
 
-////Help with the server
-// //new instruction should be posted to API JSON Server file
-function findTaskId (taskname){
-    $.get(`${organizer}?taskName=TASK3`).then(function (data) {
-            let keys = (data[0]);
-            let id = keys.id;
-            console.log(id)
-    
-        getListOfTodos(id)
-    }); 
 };
 
-function getListOfTodos (id){
-    $.get(`${todoList}?OrganizerId=${id}`).then(function (data) {
-        let arr = [];
-        for(let key of data){
-            arr.push(key.id)
-            deleteInstFromServer(key.id);
-        };
-        
-        console.log(`should return data of any todos with the assigned id: ${arr}`)
-    });
-};
+function editTodoTaskName(id,newTaskName){
+    $.ajax({
+        url: `${todoList}/${id}`,
+        type: 'PATCH',
+        async:false,
+        data: {
+            taskName: `${newTaskName}`
+        },
+        success: () => {
+            console.log('The instruction should now be edited as well')
+        }
+    })
+}
 
-
-function assignToTask(){
-    $.post(`${organizer}/3/todolist`, {
-        "todo2" : "Success2"
-    });
-};
-
-// assignToTask();
+function editTodoInst(id,newInstName){
+    $.ajax({
+        url: `${todoList}/${id}`,
+        type: 'PATCH',
+        async:false,
+        data: {
+            newInstruction: `${newInstName}`
+        },
+        success: () => {
+            console.log('The instruction should now be edited as well')
+        }
+    })
+}

@@ -1,30 +1,30 @@
 {
   "organizer": [
     {
-      "taskName": "TASK2",
+      "taskName": "HOMEWORK",
       "id": 1
     },
     {
-      "taskName": "TASK3",
+      "taskName": "LAUNDRY",
       "id": 2
     }
   ],
   "todolist": [
     {
-      "taskName": "TASK2",
-      "newInstruction": "test1",
+      "taskName": "HOMEWORK",
+      "newInstruction": "Coding Assignment",
       "OrganizerId": "1",
       "id": 1
     },
     {
-      "taskName": "TASK3",
-      "newInstruction": "test1",
-      "OrganizerId": "2",
+      "taskName": "HOMEWORK",
+      "newInstruction": "Labs",
+      "OrganizerId": "1",
       "id": 2
     },
     {
-      "taskName": "TASK3",
-      "newInstruction": "test2",
+      "taskName": "LAUNDRY",
+      "newInstruction": "Pick Up Laundry ",
       "OrganizerId": "2",
       "id": 3
     }
