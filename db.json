@@ -5,5 +5,18 @@
       "id": 1
     }
   ],
-  "todolist": []
+  "todolist": [
+    {
+      "taskName": "HOMEWORK",
+      "newInstruction": "Econ",
+      "OrganizerId": "1",
+      "id": 1
+    },
+    {
+      "taskName": "HOMEWORK",
+      "newInstruction": "Math",
+      "OrganizerId": "1",
+      "id": 2
+    }
+  ]
 }
