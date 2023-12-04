@@ -5,18 +5,5 @@
       "id": 1
     }
   ],
-  "todolist": [
-    {
-      "taskName": "HOMEWORK",
-      "newInstruction": "Lab",
-      "OrganizerId": "1",
-      "id": 1
-    },
-    {
-      "taskName": "HOMEWORK",
-      "newInstruction": "Coding Assignment",
-      "OrganizerId": "1",
-      "id": 2
-    }
-  ]
+  "todolist": []
 }

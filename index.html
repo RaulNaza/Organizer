@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CRUD Project</title>
     <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+    <style>
+        body{
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+    </style>
 </head>
 <body onload="refresh()" style="background-image: linear-gradient(to bottom, rgb(255, 255, 255), rgba(52, 90, 141, 0.323));">
 
@@ -19,7 +26,7 @@
         <div class="container mb-3" style="justify-items: start;">
             <form class="m-2" id="task-form">
                 <div>
-                    <label class="form-label fs-5">New Task Name</label>
+                    <!-- <label class="form-label fs-5">New Task Name</label> -->
                     <input class="form-control" style="width: 30%;" placeholder="Provide Task Name">
                     <button type="submit" class="btn btn-primary mt-3" id="submitBtn">Add Task</button>
                 </div>
@@ -34,7 +41,7 @@
 
     <footer>
         <div class="container border-top border-dark-subtle ">
-            <div class="row mt-2">
+            <div class="row mt-2 mb-2">
                 <img src="images/Professional Photo.jpeg" class="col-2 rounded-circle">
                 <div class="col-10 rounded-pill fs-4 fw-medium fst-italic text-start mt-5">Created by: <br> Raul Nazario Gonzales</div>
             </div>
